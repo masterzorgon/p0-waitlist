@@ -7,6 +7,7 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [profileImage, setProfileImage] = useState("");
   const [generatedImage, setGeneratedImage] = useState("");
+  const [shareableUrl, setShareableUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -14,7 +15,7 @@ export default function Home() {
     e.preventDefault();
     setLoading(true);
     setError("");
-    
+
     try {
       const response = await fetch("/api/banner", {
         method: "POST",
@@ -23,10 +24,11 @@ export default function Home() {
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
         setProfileImage(`https://unavatar.io/twitter/${username}`);
         setGeneratedImage(`data:image/png;base64,${data.image}`);
+        setShareableUrl(data.shareableUrl);
       } else {
         setError(data.error || "Failed to generate banner");
       }
@@ -46,7 +48,7 @@ export default function Home() {
           className="flex flex-col gap-4 p-8 rounded-lg shadow-xl w-full lg:w-96"
         >
           <h2 className="text-2xl font-bold mb-4 text-black">Generate Your Banner</h2>
-          
+
           <input
             className="p-3 rounded text-black"
             placeholder="Your Twitter handle (without @)"
@@ -76,7 +78,7 @@ export default function Home() {
           >
             {loading ? "Generating..." : "Generate My Banner"}
           </button>
-          
+
           {error && (
             <div className="text-red-400 text-sm mt-2">
               {error}
@@ -118,23 +120,41 @@ export default function Home() {
                   className="w-full max-w-md mx-auto"
                 />
               </div>
-              <div className="mt-4 flex gap-2">
-                <button
-                  onClick={() => {
-                    const link = document.createElement('a');
-                    link.download = `${username}-banner.png`;
-                    link.href = generatedImage;
-                    link.click();
-                  }}
-                  className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-sm"
-                >
-                  Download Banner
-                </button>
+              <div className="mt-4 flex flex-col gap-2">
+                <div className="text-sm text-gray-400 mb-2">
+                  Share this image with your tweet:
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      // Copy shareable URL to clipboard
+                      navigator.clipboard.writeText(shareableUrl);
+                      // Show a brief success message (you could add a toast here)
+                      alert("Shareable URL copied to clipboard!");
+                    }}
+                    className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded text-sm"
+                  >
+                    Copy Image URL
+                  </button>
+                  <button
+                    onClick={() => {
+                      const tweetText = `Unified margin is coming to DeFi, and I'm in early. I nominate @${mutual} to join the movement. ${shareableUrl}`;
+                      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+                      window.open(twitterUrl, '_blank');
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm"
+                  >
+                    Share to Twitter
+                  </button>
+                </div>
+                <div className="text-xs text-gray-500 mt-2">
+                  The image URL will be valid for 1 hour
+                </div>
               </div>
             </div>
           )}
         </div>
       </div>
-    </div>
+    </div >
   );
 }

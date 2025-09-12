@@ -1,9 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import sharp from "sharp";
+import { v4 as uuidv4 } from "uuid";
+
+// Simple in-memory storage for generated images
+// In production, you'd want to use a proper database or file storage
+const imageStorage = new Map<string, { image: Buffer; username: string; createdAt: number }>();
+
+// Clean up old images (older than 1 hour)
+const cleanupOldImages = () => {
+  const oneHourAgo = Date.now() - 60 * 60 * 1000;
+  for (const [id, data] of imageStorage.entries()) {
+    if (data.createdAt < oneHourAgo) {
+      imageStorage.delete(id);
+    }
+  }
+};
 
 export async function POST(req: NextRequest) {
   try {
-    const { username, email } = await req.json();
+    const { username, email, mutual } = await req.json();
 
     // Fetch Twitter profile pic
     const profilePic = `https://unavatar.io/twitter/${username}`;
@@ -48,7 +63,20 @@ export async function POST(req: NextRequest) {
       .png()
       .toBuffer();
 
-    // Encode as base64 string
+    // Generate unique ID for this image
+    const imageId = uuidv4();
+    
+    // Store the image in memory
+    imageStorage.set(imageId, {
+      image: composite,
+      username: username,
+      createdAt: Date.now()
+    });
+
+    // Clean up old images
+    cleanupOldImages();
+
+    // Encode as base64 string for immediate display
     const base64Img = composite.toString("base64");
 
     // If email is provided and valid, add to newsletter
@@ -73,15 +101,21 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Return success response with both the generated image and profile info
+    // Return success response with both the generated image and shareable URL
     return NextResponse.json({
       success: true,
       image: base64Img,
+      imageId: imageId,
+      shareableUrl: `${req.nextUrl.origin}/api/image/${imageId}`,
       profileImage: profilePic,
-      username: username
+      username: username,
+      mutual: mutual
     });
   } catch (err) {
     console.error("Error generating image:", err);
     return NextResponse.json({ success: false, error: String(err) }, { status: 500 });
   }
 }
+
+// Export the image storage for use in the image endpoint
+export { imageStorage };

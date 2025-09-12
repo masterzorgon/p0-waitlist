@@ -9,16 +9,17 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.6",
+    "@heroicons/react": "^2.1.4",
+    "@next/third-parties": "^15.5.2",
+    "@react-email/components": "^0.5.1",
+    "@react-email/tailwind": "^1.2.2",
     "next": "15.5.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "resend": "^6.0.3",
     "sharp": "^0.34.3",
-    "@headlessui/react": "^2.2.6",
-    "@heroicons/react": "^2.1.4",
-    "@next/third-parties": "^15.5.2",
-    "@react-email/components": "^0.5.1",
-    "@react-email/tailwind": "^1.2.2"
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -26,6 +27,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/uuid": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.5.3",
     "tailwindcss": "^4",
