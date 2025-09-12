@@ -80,26 +80,26 @@ export async function POST(req: NextRequest) {
     const base64Img = composite.toString("base64");
 
     // If email is provided and valid, add to newsletter
-    if (email) {
-      try {
-        const newsletterResponse = await fetch(`${req.nextUrl.origin}/api/newsletter`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        });
+    // if (email) {
+    //   try {
+    //     const newsletterResponse = await fetch(`${req.nextUrl.origin}/api/newsletter`, {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //       body: JSON.stringify({ email }),
+    //     });
 
-        if (!newsletterResponse.ok) {
-          const errorData = await newsletterResponse.json();
-          console.warn("Newsletter subscription failed:", errorData);
-          // Continue with banner generation even if newsletter fails
-        }
-      } catch (newsletterError) {
-        console.warn("Newsletter subscription error:", newsletterError);
-        // Continue with banner generation even if newsletter fails
-      }
-    }
+    //     if (!newsletterResponse.ok) {
+    //       const errorData = await newsletterResponse.json();
+    //       console.warn("Newsletter subscription failed:", errorData);
+    //       // Continue with banner generation even if newsletter fails
+    //     }
+    //   } catch (newsletterError) {
+    //     console.warn("Newsletter subscription error:", newsletterError);
+    //     // Continue with banner generation even if newsletter fails
+    //   }
+    // }
 
     // Return success response with both the generated image and shareable URL
     return NextResponse.json({
