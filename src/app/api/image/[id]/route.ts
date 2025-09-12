@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { imageStorage } from "../banner/route";
+import { imageStorage } from "../../banner/route";
 
-export async function GET(req: NextRequest) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get('id');
-    
-    if (!id) {
-      return new NextResponse("Missing image ID", { status: 400 });
-    }
+    const { id } = await params;
     
     const imageData = imageStorage.get(id);
     
