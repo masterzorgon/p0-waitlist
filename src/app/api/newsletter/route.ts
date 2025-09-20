@@ -3,7 +3,6 @@ import { Resend } from 'resend';
 import { render } from '@react-email/components';
 
 import NewsletterSubscribe from "@/emails/NewsletterSubscribe";
-import { validateEmail } from "@/utils/validateEmail";
 
 export async function POST(request: NextRequest) {
     const { email } = await request.json();
@@ -11,10 +10,6 @@ export async function POST(request: NextRequest) {
     const resend = new Resend(process.env.RESEND_API_KEY);
     const audience = process.env.RESEND_AUDIENCE_KEY!;
     const marketingEmail = process.env.MARKETING_EMAIL_ADDRESS!;
-
-    if (!validateEmail(email)) {
-        return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
-    }
 
     try {
         const { data: contactList } = await resend.contacts.list({
@@ -25,8 +20,9 @@ export async function POST(request: NextRequest) {
 
         if (contactExists) {
             return NextResponse.json({
-                error: "Email is already subscribed."
-            }, { status: 409 });
+                success: true,
+                message: "Email is already subscribed"
+            }, { status: 200 });
         }
 
         await resend.contacts.create({
@@ -48,8 +44,11 @@ export async function POST(request: NextRequest) {
             },
         });
 
-        const data = { confirmData };
-        return NextResponse.json({ data });
+        return NextResponse.json({
+            success: true,
+            message: "Successfully subscribed to the newsletter!",
+            data: { confirmData }
+        }, { status: 200 });
     } catch (error) {
         console.error("Full error object:", JSON.stringify(error, null, 2));
         return NextResponse.json({

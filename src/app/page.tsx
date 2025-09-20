@@ -1,16 +1,11 @@
-'use client'
-
 import { Header } from "@/components/header";
 import { Form } from "@/components/form/form";
-import { useState } from "react";
 
 export default function Home() {
-    const [currentStep, setCurrentStep] = useState<number>(1);
-
     return (
-        <main>
+        <main className="flex flex-col gap-y-32 sm:gap-y-24">
             <Header />
-            <Form currentStep={currentStep} />
+            <Form initialStep={1} />
         </main>
     )
 }

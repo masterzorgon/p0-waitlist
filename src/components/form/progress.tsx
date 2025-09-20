@@ -1,14 +1,7 @@
 'use client'
 
 import { cn } from "@/lib/utils";
-
-const steps = [
-    { id: 1, name: "Email", href: "1" },
-    { id: 2, name: "Telegram", href: "2" },
-    { id: 3, name: "Twitter", href: "3" },
-    { id: 4, name: "Wallet", href: "4" },
-    { id: 5, name: "Confirmation", href: "5" },
-];
+import { stepConfigs } from "./form";
 
 interface ProgressProps {
     currentStep: number;
@@ -18,7 +11,7 @@ export const Progress = ({ currentStep }: ProgressProps) => {
     return (
         <nav aria-label="Progress" className="mx-auto max-w-2xl">
             <ol className="space-y-0 md:flex md:space-y-0 md:space-x-8">
-                {steps.map((step) => (
+                {stepConfigs.map((step) => (
                     <li key={step.name} className="md:flex-1">
                         {step.id <= currentStep ? (
                             <div

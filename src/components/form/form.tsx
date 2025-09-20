@@ -1,63 +1,246 @@
 'use client'
 
-import { Progress } from "./progress";
-import { Button } from "../button";
-import { EnvelopeIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
+import { Progress } from "@/components/form/progress";
+import { InputField } from "@/components/form/input-field";
+import { FormNavigation } from "@/components/form/form-navigation";
+import { useToast } from "@/components/toast-provider";
+import {
+    EnvelopeIcon,
+    WalletIcon,
+    CheckCircleIcon,
+    ChatBubbleLeftRightIcon,
+    UserIcon
+} from "@heroicons/react/24/outline";
+import { validateEmail, validateTelegram, validateTwitter, validateWallet } from "@/lib/utils";
 
-export const Form = ({ currentStep }: { currentStep: number }) => {
+export const stepConfigs = [
+    {
+        id: 1,
+        name: "Email",
+        title: "Enter your email address",
+        description: "We'll sign you up for our newsletter and contact you if you're accepted for early access.",
+        icon: EnvelopeIcon,
+        inputType: "email",
+        inputName: "email",
+        inputId: "email",
+        placeholder: "example@email.com"
+    },
+    {
+        id: 2,
+        name: "Telegram",
+        title: "Enter your Telegram username",
+        description: "We'll use this to contact you about exclusive opportunities.",
+        icon: ChatBubbleLeftRightIcon,
+        inputType: "text",
+        inputName: "telegram",
+        inputId: "telegram",
+        placeholder: "@yourusername"
+    },
+    {
+        id: 3,
+        name: "Wallet",
+        title: "Enter your wallet address",
+        description: "Enter the wallet you use on Project 0. We'll determine your points and rank.",
+        icon: WalletIcon,
+        inputType: "text",
+        inputName: "wallet",
+        inputId: "wallet",
+        placeholder: "CYBE..7S6E"
+    },
+    {
+        id: 4,
+        name: "Twitter",
+        title: "Enter your X (Twitter) handle",
+        description: "We'll use this to generate a banner image you can share on X (Twitter).",
+        icon: UserIcon,
+        inputType: "text",
+        inputName: "twitter",
+        inputId: "twitter",
+        placeholder: "@yourhandle"
+    },
+    {
+        id: 5,
+        name: "Confirmation",
+        title: "Confirm your information",
+        description: "We will never ask for your secret key or seed phrase.",
+        icon: CheckCircleIcon,
+        inputType: "text",
+        inputName: "confirmation",
+        inputId: "confirmation",
+        placeholder: "All set!"
+    }
+];
+
+const validateField = (fieldName: string, value: string): string | null => {
+    switch (fieldName) {
+        case 'email':
+            return validateEmail(value);
+        case 'telegram':
+            return validateTelegram(value);
+        case 'twitter':
+            return validateTwitter(value);
+        case 'wallet':
+            return validateWallet(value);
+        default:
+            return null;
+    }
+};
+
+export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
+    const [currentStep, setCurrentStep] = useState(initialStep);
+    const [formData, setFormData] = useState({
+        email: '',
+        telegram: '',
+        twitter: '',
+        wallet: ''
+    });
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { showToast } = useToast();
+
+    const currentConfig = stepConfigs[currentStep - 1];
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+
+        if (errors[name]) {
+            setErrors(prev => ({
+                ...prev,
+                [name]: ''
+            }));
+        }
+    };
+
+    const validateCurrentField = (): boolean => {
+        if (currentStep === 5) return true;
+
+        const fieldName = currentConfig.inputName;
+        const fieldValue = formData[fieldName as keyof typeof formData];
+        const error = validateField(fieldName, fieldValue);
+
+        if (error) {
+            setErrors(prev => ({
+                ...prev,
+                [fieldName]: error
+            }));
+            return false;
+        }
+
+        return true;
+    };
+
+    const submitEmailToNewsletter = async (email: string): Promise<boolean> => {
+        try {
+            const response = await fetch('/api/newsletter', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                // Successfully signed up or already subscribed
+                showToast('Successfully subscribed', 'success');
+                return true;
+            } else {
+                const errorMessage = result.error || 'Failed to sign up for newsletter';
+                showToast(errorMessage, 'error');
+                setErrors(prev => ({
+                    ...prev,
+                    email: errorMessage
+                }));
+                return false;
+            }
+        } catch (error) {
+            console.error('Newsletter signup error:', error);
+            const errorMessage = 'An error occurred. Please try again.';
+            showToast(errorMessage, 'error');
+            setErrors(prev => ({
+                ...prev,
+                email: errorMessage
+            }));
+            return false;
+        }
+    };
+
+    const handleNext = async () => {
+        if (!validateCurrentField()) return;
+
+        // If we're on the email step, submit to newsletter first
+        if (currentStep === 1) {
+            setIsSubmitting(true);
+            const success = await submitEmailToNewsletter(formData.email);
+            setIsSubmitting(false);
+            
+            if (!success) {
+                return; // Don't proceed if newsletter signup failed
+            }
+        }
+
+        if (currentStep < stepConfigs.length) {
+            setCurrentStep(currentStep + 1);
+        }
+    };
+
+    const handleBack = () => {
+        if (currentStep > 1) {
+            setCurrentStep(currentStep - 1);
+        }
+    };
+
+    const handleComplete = () => {
+        // Handle form completion logic here
+        console.log('Form completed!', formData);
+        // You can add form submission logic here
+    };
+
+    const isCurrentFieldValid = currentStep === 5 || !validateField(
+        currentConfig.inputName,
+        formData[currentConfig.inputName as keyof typeof formData]
+    );
+
     return (
-        <section className="mx-auto max-w-3xl mt-20">
+        <section className="mx-auto w-[90%] sm:w-[80%] md:w-[70%] lg:w-[60%] xl:w-[50%]">
             <Progress currentStep={currentStep} />
 
             <div className="p-8 mt-6 rounded-lg shadow-md outline-1 outline-gray-100">
-                <h3 className="text-lg leading-6 font-semibold text-gray-900">
-                    Your email address
-                </h3>
-                <p className="mt-1 text-sm font-medium mb-4 text-gray-500">
-                    We'll use this to sign you up for our newsletter and contact you about your waitlist status.
-                </p>
-                <div className="mt-4 relative rounded-md shadow-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                        <EnvelopeIcon className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                        type="email"
-                        name="email"
-                        id="email"
-                        className="py-4 block w-full pl-10 sm:text-sm rounded-md text-gray-900 border-gray-300 focus:ring-vanguardPurple focus:border-vanguardPurple"
-                        placeholder="example@email.com"
-                        // value={email}
-                        // onChange={(e) => setEmail(e.target.value)}
-                    />
-                </div>
+                <InputField
+                    title={currentConfig.title}
+                    description={currentConfig.description}
+                    icon={currentConfig.icon}
+                    inputType={currentConfig.inputType}
+                    inputName={currentConfig.inputName}
+                    inputId={currentConfig.inputId}
+                    placeholder={currentConfig.placeholder}
+                    value={formData[currentConfig.inputName as keyof typeof formData] || ''}
+                    onChange={handleInputChange}
+                    error={errors[currentConfig.inputName]}
+                />
 
-                <div className="mt-6 text-sm flex justify-between items-center">
-                    <Button
-                        variant="secondary"
-                        // onClick={onSubmit}
-                        // loading={loading}
-                        // disabled={loading || !complete}
-                        // arrow={true}
-                    >
-                        Back
-                    </Button>
-                    <Button
-                        variant="primary"
-                        // onClick={onSubmit}
-                        // loading={loading}
-                        // disabled={loading || !complete}
-                        // arrow={true}
-                    >
-                        Next
-                    </Button>
-                </div>
+                <FormNavigation
+                    currentStep={currentStep}
+                    totalSteps={stepConfigs.length}
+                    isCurrentFieldValid={isCurrentFieldValid}
+                    isSubmitting={isSubmitting}
+                    onBack={handleBack}
+                    onNext={handleNext}
+                    onComplete={handleComplete}
+                />
             </div>
 
-            <div className="mt-6 text-sm text-center text-gray-400 max-w-lg mx-auto">
+            <div className="mt-6 text-sm text-center text-gray-400 max-w-sm sm:max-w-lg mx-auto">
                 <p>
                     Early access will be granted at Project 0's discretion.
-                    You will be notified via email when your early access is granted.
-                    Thank you for your interest.
+                    You will be notified via email if your early access is granted.
+                    We will never ask for your secret key or seed phrase.
                 </p>
             </div>
         </section>
