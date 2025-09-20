@@ -64,7 +64,7 @@ export const InputField = ({
                 {description}
             </motion.p>
             <motion.div 
-                className="mt-4 relative rounded-md shadow-sm"
+                className="mt-4 relative rounded-md shadow-sm border-2"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ 
@@ -83,7 +83,7 @@ export const InputField = ({
                     className={`py-4 block w-full pl-10 sm:text-sm rounded-md text-gray-900 ${
                         error 
                             ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
-                            : 'border-gray-300 focus:ring-vanguardPurple focus:border-vanguardPurple'
+                            : 'border-gray-300 focus:ring-vangardPurple focus:border-vangardPurple'  /* Fixed: removed the 'u' */
                     }`}
                     placeholder={placeholder}
                     value={value}

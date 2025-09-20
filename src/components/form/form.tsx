@@ -154,7 +154,7 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
         const fieldName = currentConfig.inputName;
         const fieldValue = formData[fieldName as keyof typeof formData];
         
-        let error: string | null = null;
+        const error: string | null = null;
         
         // if (fieldName === 'twitter') {
         //     error = await validateTwitterField(fieldValue);
@@ -306,7 +306,7 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
 
             <div className="mt-6 text-sm text-center text-gray-400 max-w-sm sm:max-w-lg mx-auto">
                 <p>
-                    Early access will be granted at Project 0's discretion.
+                    Early access will be granted at Project 0&apos;s discretion.
                     You will be notified via email if your early access application is approved.
                     We will never ask for your secret key or seed phrase.
                 </p>

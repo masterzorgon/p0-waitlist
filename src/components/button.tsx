@@ -86,5 +86,5 @@ export function Button({
 		)
 	}
 
-	return <Link {...props} className={className}>{children as any}</Link>
+    return <Link {...props} className={className}>{children as React.ReactNode}</Link>
 }
