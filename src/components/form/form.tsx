@@ -12,7 +12,7 @@ import {
     ChatBubbleLeftRightIcon,
     UserIcon
 } from "@heroicons/react/24/outline";
-import { validateEmail, validateTelegram, validateTwitter, validateWallet } from "@/lib/utils";
+import { validateEmail, validateTelegram, validateTwitter, validateWallet, validateTwitterExists, getTwitterProfileImage } from "@/lib/utils";
 
 export const stepConfigs = [
     {
@@ -98,6 +98,8 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { showToast } = useToast();
+    const [twitterProfileImage, setTwitterProfileImage] = useState<string>('');
+    const [isValidatingTwitter, setIsValidatingTwitter] = useState(false);
 
     const currentConfig = stepConfigs[currentStep - 1];
 
@@ -116,12 +118,45 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
         }
     };
 
-    const validateCurrentField = (): boolean => {
+    const validateTwitterField = async (twitterHandle: string): Promise<string | null> => {
+        // First do basic format validation
+        const formatError = validateTwitter(twitterHandle);
+        if (formatError) return formatError;
+
+        // Then check if the username exists
+        setIsValidatingTwitter(true);
+        try {
+            const exists = await validateTwitterExists(twitterHandle);
+            if (!exists) {
+                showToast('Twitter handle not found', 'error');
+                return null;
+            }
+            
+            // If valid, set the profile image
+            setTwitterProfileImage(getTwitterProfileImage(twitterHandle))
+            console.log('Twitter handle found', twitterProfileImage);
+            return null;
+        } catch (error) {
+            console.warn('Twitter validation error:', error);
+            return null; // Don't block on validation errors
+        } finally {
+            setIsValidatingTwitter(false);
+        }
+    };
+
+    const validateCurrentField = async (): Promise<boolean> => {
         if (currentStep === 5) return true;
 
         const fieldName = currentConfig.inputName;
         const fieldValue = formData[fieldName as keyof typeof formData];
-        const error = validateField(fieldName, fieldValue);
+        
+        let error: string | null = null;
+        
+        if (fieldName === 'twitter') {
+            error = await validateTwitterField(fieldValue);
+        } else {
+            error = validateField(fieldName, fieldValue);
+        }
 
         if (error) {
             setErrors(prev => ({
@@ -172,7 +207,8 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
     };
 
     const handleNext = async () => {
-        if (!validateCurrentField()) return;
+        const isValid = await validateCurrentField();
+        if (!isValid) return;
 
         // If we're on the email step, submit to newsletter first
         if (currentStep === 1) {

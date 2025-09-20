@@ -32,3 +32,25 @@ export function validateWallet(wallet: string) {
     if (wallet.length < 42 || wallet.length > 44) return "Wallet address must be 42-44 characters long";
     return null;
 };
+
+export async function validateTwitterExists(username: string): Promise<boolean> {
+    try {
+        // Remove @ if present and clean the username
+        const cleanUsername = username.replace(/^@/, '').trim();
+        
+        // Check if profile image exists using unavatar
+        const response = await fetch(`https://unavatar.io/twitter/${cleanUsername}`, {
+            method: 'HEAD',
+        });
+        
+        return response.ok;
+    } catch (error) {
+        console.warn('Could not validate Twitter username existence:', error);
+        return true; // Assume valid if we can't check
+    }
+}
+
+export function getTwitterProfileImage(username: string): string {
+    const cleanUsername = username.replace(/^@/, '').trim();
+    return `https://unavatar.io/twitter/${cleanUsername}`;
+}
