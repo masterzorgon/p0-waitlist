@@ -3,7 +3,7 @@ import { Form } from "@/components/form/form";
 
 export default function Home() {
     return (
-        <main className="flex flex-col gap-y-32 sm:gap-y-24">
+        <main className="flex flex-col gap-y-24">
             <Header />
             <Form initialStep={1} />
         </main>

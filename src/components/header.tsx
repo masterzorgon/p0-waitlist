@@ -19,9 +19,11 @@ export function Header() {
                     <div className="relative">
                         <div className="bg-background absolute top-1/2 left-1/2 h-[160px] w-[280px] -translate-x-1/2 -translate-y-1/2 rounded-lg blur-[40px] sm:w-[350px] md:w-[400px] lg:h-[244px] lg:w-[555px]"></div>
                         <div className="relative flex flex-col items-center justify-center space-y-2 md:space-y-4">
-                            <GradientText className="text-center font-semibold text-4xl md:text-5xl lg:text-6xl">
+                            <GradientText className="text-center font-semibold text-4xl md:text-5xl lg:text-7xl">
                                 Apply for <br />Early Access
                             </GradientText>
+
+                            {/* <img src="/images/logos/P0.png" alt="Project 0 Logo" className="w-1/3 h-1/3" /> */}
 
                             <div className="flex fixed top-6 sm:top-0 left-0 right-0 z-50 relative isolate flex items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 rounded-lg shadow-sm">
                                 <div
@@ -55,7 +57,7 @@ export function Header() {
                                             alt="Kamino"
                                             className="h-4 w-4 mr-2 inline-block"
                                         />
-                                        <strong className="font-semibold">Kamino Main Market is coming to Project 0 in October</strong>
+                                        <strong className="font-semibold">Kamino Main Market Early Access Application</strong>
                                     </p>
                                 </div>
                             </div>
