@@ -23,21 +23,43 @@ export function Header() {
                             <GradientText className="text-center font-semibold text-4xl md:text-5xl lg:text-6xl">
                                 Apply for <br />Early Access
                             </GradientText>
-                            <p className="mx-auto text-center text-black md:text-lg lg:text-2xl">
-                                Early access will be granted at Project 0's discretion. <br />
-                                <span>Thank you for your interest.</span>
-                            </p>
-                            {/* <div className="mt-4">
-                                <a href="https://blog.0.xyz/" target="_blank" rel="noopener noreferrer" className="inline-flex space-x-6">
-                                    <span className="rounded-full bg-vangardPurple/10 px-3 py-1 text-sm/6 font-semibold text-vangardPurple ring-1 ring-indigo-600/20 ring-inset">
-                                        Learn more
-                                    </span>
-                                    <span className="inline-flex items-center space-x-2 text-sm/6 font-medium text-gray-950">
-                                        <span>Read the announcement</span>
-                                        <ChevronRightIcon aria-hidden="true" className="size-5 text-gray-400" />
-                                    </span>
-                                </a>
-                            </div> */}
+
+                            <div className="hidden md:flex fixed top-0 left-0 right-0 z-50 relative isolate flex items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 rounded-lg shadow-sm">
+                                <div
+                                    aria-hidden="true"
+                                    className="absolute top-1/2 left-[max(-7rem,calc(50%-52rem))] -z-10 -translate-y-1/2 transform-gpu blur-2xl"
+                                >
+                                    <div
+                                        style={{
+                                            clipPath:
+                                                'polygon(74.8% 41.9%, 97.2% 73.2%, 100% 34.9%, 92.5% 0.4%, 87.5% 0%, 75% 28.6%, 58.5% 54.6%, 50.1% 56.8%, 46.9% 44%, 48.3% 17.4%, 24.7% 53.9%, 0% 27.9%, 11.9% 74.2%, 24.9% 54.1%, 68.6% 100%, 74.8% 41.9%)',
+                                        }}
+                                        className="aspect-577/310 w-144.25 bg-linear-to-r from-deepBlue/50 via-vangardPurple/50 to-lightBlue/50 opacity-30"
+                                    />
+                                </div>
+                                <div
+                                    aria-hidden="true"
+                                    className="absolute top-1/2 left-[max(45rem,calc(50%+8rem))] -z-10 -translate-y-1/2 transform-gpu blur-2xl"
+                                >
+                                    <div
+                                        style={{
+                                            clipPath:
+                                                'polygon(74.8% 41.9%, 97.2% 73.2%, 100% 34.9%, 92.5% 0.4%, 87.5% 0%, 75% 28.6%, 58.5% 54.6%, 50.1% 56.8%, 46.9% 44%, 48.3% 17.4%, 24.7% 53.9%, 0% 27.9%, 11.9% 74.2%, 24.9% 54.1%, 68.6% 100%, 74.8% 41.9%)',
+                                        }}
+                                        className="aspect-577/310 w-144.25 bg-linear-to-r from-deepBlue/50 via-vangardPurple/50 to-lightBlue/50 opacity-30"
+                                    />
+                                </div>
+                                <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                                    <p className="text-sm/6 text-gray-900 flex items-center">
+                                        <img
+                                            src="/images/logos/kamino.png"
+                                            alt="Kamino"
+                                            className="h-4 w-4 mr-2 inline-block"
+                                        />
+                                        <strong className="font-semibold">Kamino Main Market is coming to Project 0 in October</strong>
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </header>
