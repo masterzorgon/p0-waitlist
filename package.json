@@ -11,15 +11,18 @@
   "dependencies": {
     "@headlessui/react": "^2.2.6",
     "@heroicons/react": "^2.1.4",
+    "@lottiefiles/dotlottie-react": "^0.17.1",
     "@next/third-parties": "^15.5.2",
     "@react-email/components": "^0.5.1",
     "@react-email/tailwind": "^1.2.2",
     "framer-motion": "^12.23.16",
+    "lodash.debounce": "^4.0.8",
     "next": "15.5.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "resend": "^6.0.3",
     "sharp": "^0.34.3",
+    "tailwind-merge": "^3.3.1",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
