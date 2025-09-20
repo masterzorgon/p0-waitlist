@@ -23,8 +23,9 @@ export const Progress = ({ currentStep }: ProgressProps) => {
                                 isActive 
                                     ? "border-vangardPurple" 
                                     : "border-gray-200",
-                                !isCurrent && !isActive && "hidden sm:flex",
-                                isCurrent && "sm:flex"
+                                // On mobile: only show current step, on desktop: show all active steps
+                                !isCurrent && "hidden md:flex",
+                                isCurrent && "flex"
                             )}>
                                 <span className={cn(
                                     "text-xs font-semibold tracking-wide uppercase",
