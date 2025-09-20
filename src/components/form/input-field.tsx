@@ -1,4 +1,7 @@
-import { ComponentType } from 'react';
+'use client'
+
+import { motion } from "framer-motion";
+import { ComponentType } from "react";
 
 interface InputFieldProps {
     title: string;
@@ -26,14 +29,50 @@ export const InputField = ({
     error
 }: InputFieldProps) => {
     return (
-        <div className="">
-            <h3 className="text-lg leading-6 font-semibold text-gray-900">
+        <motion.div 
+            className=""
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ 
+                duration: 0.25,
+                ease: "easeInOut"
+            }}
+        >
+            <motion.h3 
+                className="text-lg leading-6 font-semibold text-gray-900"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ 
+                    duration: 0.2,
+                    delay: 0.05,
+                    ease: "easeOut"
+                }}
+            >
                 {title}
-            </h3>
-            <p className="mt-1 text-sm font-medium mb-4 text-gray-500">
+            </motion.h3>
+            <motion.p 
+                className="mt-1 text-sm font-medium mb-4 text-gray-500"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ 
+                    duration: 0.2,
+                    delay: 0.1,
+                    ease: "easeOut"
+                }}
+            >
                 {description}
-            </p>
-            <div className="mt-4 relative rounded-md shadow-sm">
+            </motion.p>
+            <motion.div 
+                className="mt-4 relative rounded-md shadow-sm"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ 
+                    duration: 0.2,
+                    delay: 0.15,
+                    ease: "easeOut"
+                }}
+            >
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
                     <IconComponent className={`h-5 w-5 ${error ? 'text-red-400' : 'text-gray-400'}`} />
                 </div>
@@ -50,12 +89,21 @@ export const InputField = ({
                     value={value}
                     onChange={onChange}
                 />
-            </div>
+            </motion.div>
             {error && (
-                <p className="mt-2 text-sm text-red-600">
+                <motion.p 
+                    className="mt-2 text-sm text-red-600"
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    transition={{ 
+                        duration: 0.15,
+                        ease: "easeOut"
+                    }}
+                >
                     {error}
-                </p>
+                </motion.p>
             )}
-        </div>
+        </motion.div>
     );
 };

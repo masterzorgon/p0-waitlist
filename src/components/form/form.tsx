@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Progress } from "@/components/form/progress";
 import { InputField } from "@/components/form/input-field";
 import { ConfirmationDisplay } from "@/components/form/confirmation-display";
@@ -98,6 +99,8 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    // Add state to track successfully submitted emails
+    const [successfullySubmittedEmail, setSuccessfullySubmittedEmail] = useState<string | null>(null);
     const { showToast } = useToast();
     const [twitterProfileImage, setTwitterProfileImage] = useState<string>('');
     const [isValidatingTwitter, setIsValidatingTwitter] = useState(false);
@@ -185,6 +188,8 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
             if (response.ok) {
                 // Successfully signed up or already subscribed
                 showToast('Successfully subscribed', 'success');
+                // Cache the successfully submitted email
+                setSuccessfullySubmittedEmail(email);
                 return true;
             } else {
                 const errorMessage = result.error || 'Failed to sign up for newsletter';
@@ -211,8 +216,16 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
         const isValid = await validateCurrentField();
         if (!isValid) return;
 
-        // If we're on the email step, submit to newsletter first
+        // If we're on the email step, check cache first before submitting
         if (currentStep === 1) {
+            // Check if the current email was already successfully submitted
+            if (successfullySubmittedEmail === formData.email) {
+                // Skip API call, proceed to next step
+                setCurrentStep(currentStep + 1);
+                return;
+            }
+
+            // Email has changed or hasn't been submitted yet, make API call
             setIsSubmitting(true);
             const success = await submitEmailToNewsletter(formData.email);
             setIsSubmitting(false);
@@ -249,22 +262,36 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
             <Progress currentStep={currentStep} />
 
             <div className="p-8 mt-6 rounded-lg shadow-md outline-1 outline-gray-100">
-                {currentStep === 5 ? (
-                    <ConfirmationDisplay formData={formData} />
-                ) : (
-                    <InputField
-                        title={currentConfig.title}
-                        description={currentConfig.description}
-                        icon={currentConfig.icon}
-                        inputType={currentConfig.inputType}
-                        inputName={currentConfig.inputName}
-                        inputId={currentConfig.inputId}
-                        placeholder={currentConfig.placeholder}
-                        value={formData[currentConfig.inputName as keyof typeof formData] || ''}
-                        onChange={handleInputChange}
-                        error={errors[currentConfig.inputName]}
-                    />
-                )}
+                <AnimatePresence mode="wait">
+                    {currentStep === 5 ? (
+                        <motion.div
+                            key="confirmation"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ 
+                                duration: 0.4,
+                                ease: "easeInOut"
+                            }}
+                        >
+                            <ConfirmationDisplay formData={formData} />
+                        </motion.div>
+                    ) : (
+                        <InputField
+                            key={`step-${currentStep}`}
+                            title={currentConfig.title}
+                            description={currentConfig.description}
+                            icon={currentConfig.icon}
+                            inputType={currentConfig.inputType}
+                            inputName={currentConfig.inputName}
+                            inputId={currentConfig.inputId}
+                            placeholder={currentConfig.placeholder}
+                            value={formData[currentConfig.inputName as keyof typeof formData] || ''}
+                            onChange={handleInputChange}
+                            error={errors[currentConfig.inputName]}
+                        />
+                    )}
+                </AnimatePresence>
 
                 <FormNavigation
                     currentStep={currentStep}
