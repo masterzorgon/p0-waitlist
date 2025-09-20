@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Progress } from "@/components/form/progress";
 import { InputField } from "@/components/form/input-field";
+import { ConfirmationDisplay } from "@/components/form/confirmation-display";
 import { FormNavigation } from "@/components/form/form-navigation";
 import { useToast } from "@/components/toast-provider";
 import {
@@ -118,31 +119,31 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
         }
     };
 
-    const validateTwitterField = async (twitterHandle: string): Promise<string | null> => {
-        // First do basic format validation
-        const formatError = validateTwitter(twitterHandle);
-        if (formatError) return formatError;
+    // const validateTwitterField = async (twitterHandle: string): Promise<string | null> => {
+    //     // First do basic format validation
+    //     const formatError = validateTwitter(twitterHandle);
+    //     if (formatError) return formatError;
 
-        // Then check if the username exists
-        setIsValidatingTwitter(true);
-        try {
-            const exists = await validateTwitterExists(twitterHandle);
-            if (!exists) {
-                showToast('Twitter handle not found', 'error');
-                return null;
-            }
+    //     // Then check if the username exists
+    //     setIsValidatingTwitter(true);
+    //     try {
+    //         const exists = await validateTwitterExists(twitterHandle);
+    //         if (!exists) {
+    //             showToast('Twitter handle not found', 'error');
+    //             return null;
+    //         }
             
-            // If valid, set the profile image
-            setTwitterProfileImage(getTwitterProfileImage(twitterHandle))
-            console.log('Twitter handle found', twitterProfileImage);
-            return null;
-        } catch (error) {
-            console.warn('Twitter validation error:', error);
-            return null; // Don't block on validation errors
-        } finally {
-            setIsValidatingTwitter(false);
-        }
-    };
+    //         // If valid, set the profile image
+    //         setTwitterProfileImage(getTwitterProfileImage(twitterHandle))
+    //         console.log('Twitter handle found', twitterProfileImage);
+    //         return null;
+    //     } catch (error) {
+    //         console.warn('Twitter validation error:', error);
+    //         return null; // Don't block on validation errors
+    //     } finally {
+    //         setIsValidatingTwitter(false);
+    //     }
+    // };
 
     const validateCurrentField = async (): Promise<boolean> => {
         if (currentStep === 5) return true;
@@ -152,11 +153,11 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
         
         let error: string | null = null;
         
-        if (fieldName === 'twitter') {
-            error = await validateTwitterField(fieldValue);
-        } else {
-            error = validateField(fieldName, fieldValue);
-        }
+        // if (fieldName === 'twitter') {
+        //     error = await validateTwitterField(fieldValue);
+        // } else {
+        //     error = validateField(fieldName, fieldValue);
+        // }
 
         if (error) {
             setErrors(prev => ({
@@ -244,22 +245,26 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
     );
 
     return (
-        <section className="mx-auto w-[90%] sm:w-[80%] md:w-[70%] lg:w-[60%] xl:w-[50%]">
+        <section className="mx-auto w-[90%] sm:w-[80%] md:w-[70%] lg:w-[60%] xl:w-[50%] mb-22">
             <Progress currentStep={currentStep} />
 
             <div className="p-8 mt-6 rounded-lg shadow-md outline-1 outline-gray-100">
-                <InputField
-                    title={currentConfig.title}
-                    description={currentConfig.description}
-                    icon={currentConfig.icon}
-                    inputType={currentConfig.inputType}
-                    inputName={currentConfig.inputName}
-                    inputId={currentConfig.inputId}
-                    placeholder={currentConfig.placeholder}
-                    value={formData[currentConfig.inputName as keyof typeof formData] || ''}
-                    onChange={handleInputChange}
-                    error={errors[currentConfig.inputName]}
-                />
+                {currentStep === 5 ? (
+                    <ConfirmationDisplay formData={formData} />
+                ) : (
+                    <InputField
+                        title={currentConfig.title}
+                        description={currentConfig.description}
+                        icon={currentConfig.icon}
+                        inputType={currentConfig.inputType}
+                        inputName={currentConfig.inputName}
+                        inputId={currentConfig.inputId}
+                        placeholder={currentConfig.placeholder}
+                        value={formData[currentConfig.inputName as keyof typeof formData] || ''}
+                        onChange={handleInputChange}
+                        error={errors[currentConfig.inputName]}
+                    />
+                )}
 
                 <FormNavigation
                     currentStep={currentStep}
