@@ -23,7 +23,6 @@ export const Progress = ({ currentStep }: ProgressProps) => {
                                 isActive 
                                     ? "border-vangardPurple" 
                                     : "border-gray-200",
-                                // On mobile: only show current step, on desktop: show all active steps
                                 !isCurrent && "hidden md:flex",
                                 isCurrent && "flex"
                             )}>
