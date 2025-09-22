@@ -198,14 +198,12 @@ export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
                     </div>
                 </div>
 
-                {/* Tweet Content */}
                 <div className="mb-4">
                     <p className="text-gray-900 leading-relaxed">
                         Just applied for the new <span className="text-blue-500">@0dotxyz</span> rollout. Join me: <span className="text-blue-500">{referralCode}</span>
                     </p>
                 </div>
 
-                {/* Banner Image */}
                 <div className={`rounded-xl overflow-hidden bg-gray-100 relative ${isGeneratingBanner && 'animate-pulse'}`}>
                     {isGeneratingBanner ? (
                         <div className="h-48 flex items-center justify-center">
@@ -221,7 +219,6 @@ export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
                                 alt="Project 0 Banner"
                                 className="w-full h-auto"
                             />
-                            {/* Download Icon Overlay */}
                             <button
                                 onClick={handleDownloadBanner}
                                 className="cursor-pointer absolute bottom-3 left-3 p-2 bg-black bg-opacity-50 rounded-full"
