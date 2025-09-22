@@ -51,9 +51,9 @@ export function Button({
 
 	const isDisabled = disabled || loading
 
-	const buttonContent = loading ? (
+		const buttonContent = loading ? (
 		<svg
-			className="animate-spin h-5 w-5 text-white"
+			className={`animate-spin h-5 w-5 ${variant === 'primary' ? 'text-white' : 'text-gray-950'}`}
 			xmlns="http://www.w3.org/2000/svg"
 			fill="none"
 			viewBox="0 0 24 24"

@@ -6,6 +6,8 @@ import { Progress } from "@/components/form/progress";
 import { InputField } from "@/components/form/input-field";
 import { ConfirmationDisplay } from "@/components/form/confirmation-display";
 import { FormNavigation } from "@/components/form/form-navigation";
+import { TwitterShareView } from "@/components/twitter-share-view";
+import { Confetti } from "@/components/confetti";
 import { useToast } from "@/components/toast-provider";
 import {
     EnvelopeIcon,
@@ -41,17 +43,6 @@ export const stepConfigs = [
     },
     {
         id: 3,
-        name: "Wallet",
-        title: "Enter your wallet address",
-        description: "Enter the wallet you use on Project 0. We'll determine your points and rank.",
-        icon: WalletIcon,
-        inputType: "text",
-        inputName: "wallet",
-        inputId: "wallet",
-        placeholder: "CYBE..7S6E"
-    },
-    {
-        id: 4,
         name: "Twitter",
         title: "Enter your X (Twitter) handle",
         description: "We'll use this to generate a banner image you can share on X (Twitter).",
@@ -60,6 +51,17 @@ export const stepConfigs = [
         inputName: "twitter",
         inputId: "twitter",
         placeholder: "@yourhandle"
+    },
+    {
+        id: 4,
+        name: "Wallet",
+        title: "Enter your wallet address",
+        description: "Enter the wallet you use on Project 0. We'll determine your points and rank.",
+        icon: WalletIcon,
+        inputType: "text",
+        inputName: "wallet",
+        inputId: "wallet",
+        placeholder: "CYBE..7S6E"
     },
     {
         id: 5,
@@ -104,6 +106,10 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
     const { showToast } = useToast();
     const [twitterProfileImage, setTwitterProfileImage] = useState<string>('');
     const [isValidatingTwitter, setIsValidatingTwitter] = useState(false);
+    // Add state to track if form is completed
+    const [isFormCompleted, setIsFormCompleted] = useState(false);
+    // Add state to trigger confetti
+    const [showConfetti, setShowConfetti] = useState(false);
 
     const currentConfig = stepConfigs[currentStep - 1];
 
@@ -249,7 +255,11 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
     const handleComplete = () => {
         // Handle form completion logic here
         console.log('Form completed!', formData);
-        // You can add form submission logic here
+        setShowConfetti(true);
+        // Delay setting form completed to allow confetti to show
+        setTimeout(() => {
+            setIsFormCompleted(true);
+        }, 1000);
     };
 
     const isCurrentFieldValid = currentStep === 5 || !validateField(
@@ -257,60 +267,75 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
         formData[currentConfig.inputName as keyof typeof formData]
     );
 
+    // If form is completed, show the TwitterShareView
+    if (isFormCompleted) {
+        return (
+            <>
+                <Confetti trigger={showConfetti} onComplete={() => setShowConfetti(false)} />
+                <section className="mx-auto w-[90%] sm:w-[80%] md:w-[70%] lg:w-[60%] xl:w-[50%] mb-22">
+                    <TwitterShareView formData={formData} />
+                </section>
+            </>
+        );
+    }
+
     return (
-        <section className="mx-auto w-[90%] sm:w-[80%] md:w-[70%] lg:w-[60%] xl:w-[50%] mb-22">
-            <Progress currentStep={currentStep} />
+        <>
+            <Confetti trigger={showConfetti} onComplete={() => setShowConfetti(false)} />
+            <section className="mx-auto w-[90%] sm:w-[80%] md:w-[70%] lg:w-[60%] xl:w-[50%] mb-22">
+                <Progress currentStep={currentStep} />
 
-            <div className="p-8 mt-6 rounded-lg shadow-md outline-1 outline-gray-100">
-                <AnimatePresence mode="wait">
-                    {currentStep === 5 ? (
-                        <motion.div
-                            key="confirmation"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ 
-                                duration: 0.4,
-                                ease: "easeInOut"
-                            }}
-                        >
-                            <ConfirmationDisplay formData={formData} />
-                        </motion.div>
-                    ) : (
-                        <InputField
-                            key={`step-${currentStep}`}
-                            title={currentConfig.title}
-                            description={currentConfig.description}
-                            icon={currentConfig.icon}
-                            inputType={currentConfig.inputType}
-                            inputName={currentConfig.inputName}
-                            inputId={currentConfig.inputId}
-                            placeholder={currentConfig.placeholder}
-                            value={formData[currentConfig.inputName as keyof typeof formData] || ''}
-                            onChange={handleInputChange}
-                            error={errors[currentConfig.inputName]}
-                        />
-                    )}
-                </AnimatePresence>
+                <div className="p-8 mt-6 rounded-lg shadow-md outline-1 outline-gray-100">
+                    <AnimatePresence mode="wait">
+                        {currentStep === 5 ? (
+                            <motion.div
+                                key="confirmation"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ 
+                                    duration: 0.4,
+                                    ease: "easeInOut"
+                                }}
+                            >
+                                <ConfirmationDisplay formData={formData} />
+                            </motion.div>
+                        ) : (
+                            <InputField
+                                key={`step-${currentStep}`}
+                                title={currentConfig.title}
+                                description={currentConfig.description}
+                                icon={currentConfig.icon}
+                                inputType={currentConfig.inputType}
+                                inputName={currentConfig.inputName}
+                                inputId={currentConfig.inputId}
+                                placeholder={currentConfig.placeholder}
+                                value={formData[currentConfig.inputName as keyof typeof formData] || ''}
+                                onChange={handleInputChange}
+                                error={errors[currentConfig.inputName]}
+                            />
+                        )}
+                    </AnimatePresence>
 
-                <FormNavigation
-                    currentStep={currentStep}
-                    totalSteps={stepConfigs.length}
-                    isCurrentFieldValid={isCurrentFieldValid}
-                    isSubmitting={isSubmitting}
-                    onBack={handleBack}
-                    onNext={handleNext}
-                    onComplete={handleComplete}
-                />
-            </div>
+                    <FormNavigation
+                        currentStep={currentStep}
+                        totalSteps={stepConfigs.length}
+                        isCurrentFieldValid={isCurrentFieldValid}
+                        isSubmitting={isSubmitting}
+                        onBack={handleBack}
+                        onNext={handleNext}
+                        onComplete={handleComplete}
+                    />
+                </div>
 
-            <div className="mt-6 text-sm text-center text-gray-400 max-w-sm sm:max-w-lg mx-auto">
-                <p>
-                    Early access will be granted at Project 0&apos;s discretion.
-                    You will be notified via email if your early access application is approved.
-                    We will never ask for your secret key or seed phrase.
-                </p>
-            </div>
-        </section>
+                <div className="mt-6 text-sm text-center text-gray-400 max-w-sm sm:max-w-lg mx-auto">
+                    <p>
+                        Early access will be granted at Project 0&apos;s discretion.
+                        You will be notified via email if your early access application is approved.
+                        We will never ask for your secret key or seed phrase.
+                    </p>
+                </div>
+            </section>
+        </>
     );
 };

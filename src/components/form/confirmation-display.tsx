@@ -75,18 +75,18 @@ export const ConfirmationDisplay = ({
             displayFormat: (value: string) => value.startsWith('@') ? value : `@${value}`
         },
         { 
-            id: 'wallet',
-            label: "Wallet Address", 
-            value: formData.wallet, 
-            icon: WalletIcon,
-            displayFormat: (value: string) => value.length > 20 ? `${value.slice(0, 8)}...${value.slice(-8)}` : value
-        },
-        { 
             id: 'twitter',
             label: "Twitter", 
             value: formData.twitter, 
             icon: UserIcon,
             displayFormat: (value: string) => value.startsWith('@') ? value : `@${value}`
+        },
+        { 
+            id: 'wallet',
+            label: "Wallet Address", 
+            value: formData.wallet, 
+            icon: WalletIcon,
+            displayFormat: (value: string) => value.length > 20 ? `${value.slice(0, 8)}...${value.slice(-8)}` : value
         },
     ].filter(item => item.value && item.value.trim() !== '');
 
