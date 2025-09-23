@@ -4,10 +4,11 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/button";
 import { useToast } from "@/components/toast-provider";
-import { getTwitterProfileImage } from "@/lib/utils";
+import { getTwitterProfileImage, validateTweetUrl } from "@/lib/utils";
 import { ArrowDownTrayIcon, CheckIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import { CheckCircleIcon } from "@heroicons/react/16/solid";
+import { TwitterIconNoBackground } from "@/components/icons";
 
 interface TwitterShareViewProps {
     formData: {
@@ -26,17 +27,6 @@ interface BannerResponse {
     profileImage: string;
     username: string;
 }
-
-// X (Twitter) icon component
-const XIcon = ({ className }: { className?: string }) => (
-    <svg
-        className={className}
-        viewBox="0 0 24 24"
-        fill="currentColor"
-    >
-        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-    </svg>
-);
 
 export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
     const { showToast } = useToast();
@@ -95,40 +85,14 @@ export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
         }, 1000);
     };
 
-    const validateTweetUrl = (url: string): { isValid: boolean; error?: string } => {
-        if (!url.trim()) {
-            return { isValid: false, error: 'Please enter a tweet URL' };
-        }
-
-        try {
-            // Basic URL validation
-            new URL(url);
-        } catch {
-            return { isValid: false, error: 'Please enter a valid URL' };
-        }
-
-        // Twitter/X URL pattern validation
-        const twitterUrlPattern = /^https?:\/\/(www\.)?(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/status\/\d+$/;
-        if (!twitterUrlPattern.test(url)) {
-            return {
-                isValid: false,
-                error: 'Please enter a valid Twitter/X tweet URL (e.g., https://x.com/username/status/1234567890)'
-            };
-        }
-
-        return { isValid: true };
-    };
-
     const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setTweetUrl(value);
 
-        // Clear error when user starts typing
         if (urlError) {
             setUrlError('');
         }
 
-        // Validate on blur or when user stops typing
         if (value.trim()) {
             const validation = validateTweetUrl(value);
             if (!validation.isValid) {
@@ -303,7 +267,7 @@ export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
                         className="flex items-center gap-1"
                     >
                         Share on
-                        <XIcon className="w-4 h-4" />
+                        <TwitterIconNoBackground className="w-4 h-4" />
                     </Button>
                 </div>
             </div>

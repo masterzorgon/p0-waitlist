@@ -54,3 +54,25 @@ export function getTwitterProfileImage(username: string): string {
     const cleanUsername = username.replace(/^@/, '').trim();
     return `https://unavatar.io/twitter/${cleanUsername}`;
 }
+
+export function validateTweetUrl(url: string): { isValid: boolean; error?: string } {
+    if (!url.trim()) {
+        return { isValid: false, error: 'Please enter a tweet URL' };
+    }
+
+    try {
+        new URL(url);
+    } catch {
+        return { isValid: false, error: 'Please enter a valid URL' };
+    }
+
+    const twitterUrlPattern = /^https?:\/\/(www\.)?(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/status\/\d+$/;
+    if (!twitterUrlPattern.test(url)) {
+        return {
+            isValid: false,
+            error: 'Please enter a valid Twitter/X tweet URL (e.g., https://x.com/username/status/1234567890)'
+        };
+    }
+
+    return { isValid: true };
+}
