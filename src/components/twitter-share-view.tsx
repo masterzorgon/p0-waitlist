@@ -5,7 +5,9 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/button";
 import { useToast } from "@/components/toast-provider";
 import { getTwitterProfileImage } from "@/lib/utils";
-import { ArrowDownTrayIcon, CheckBadgeIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { ArrowDownTrayIcon, CheckIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { useRouter } from "next/navigation";
+import { CheckCircleIcon } from "@heroicons/react/16/solid";
 
 interface TwitterShareViewProps {
     formData: {
@@ -37,13 +39,15 @@ const XIcon = ({ className }: { className?: string }) => (
 );
 
 export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
+    const { showToast } = useToast();
+    const router = useRouter();
+
     const [bannerImage, setBannerImage] = useState<string>('');
     const [isGeneratingBanner, setIsGeneratingBanner] = useState(true);
     const [isSharing, setIsSharing] = useState(false);
     const [tweetUrl, setTweetUrl] = useState('');
     const [isSubmittingProof, setIsSubmittingProof] = useState(false);
     const [urlError, setUrlError] = useState<string>('');
-    const { showToast } = useToast();
 
     // Generate a simple referral code based on wallet address
     const referralCode = `0dotxyz.com/waitlist?ref=${formData.wallet.slice(-8)}`;
@@ -106,9 +110,9 @@ export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
         // Twitter/X URL pattern validation
         const twitterUrlPattern = /^https?:\/\/(www\.)?(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/status\/\d+$/;
         if (!twitterUrlPattern.test(url)) {
-            return { 
-                isValid: false, 
-                error: 'Please enter a valid Twitter/X tweet URL (e.g., https://x.com/username/status/1234567890)' 
+            return {
+                isValid: false,
+                error: 'Please enter a valid Twitter/X tweet URL (e.g., https://x.com/username/status/1234567890)'
             };
         }
 
@@ -118,12 +122,12 @@ export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
     const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setTweetUrl(value);
-        
+
         // Clear error when user starts typing
         if (urlError) {
             setUrlError('');
         }
-        
+
         // Validate on blur or when user stops typing
         if (value.trim()) {
             const validation = validateTweetUrl(value);
@@ -153,13 +157,15 @@ export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
         }
 
         try {
-            setIsSubmittingProof(true);
+            // setIsSubmittingProof(true);
 
             // Here you would typically submit the tweet URL to your backend
             // For now, we'll just show a success message
             await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
 
             showToast('Tweet proof submitted successfully!', 'success');
+
+            router.push('/confirmation');
 
             // You can add additional logic here, such as:
             // - Submit to your backend API
@@ -176,7 +182,7 @@ export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
 
     const handleDownloadBanner = () => {
         if (!bannerImage) return;
-        
+
         try {
             // Create a temporary anchor element to trigger download
             const link = document.createElement('a');
@@ -185,7 +191,7 @@ export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            
+
             showToast('Banner downloaded successfully!', 'success');
         } catch (error) {
             console.error('Error downloading banner:', error);
@@ -212,7 +218,7 @@ export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
                     Spread the word!
                 </h2>
                 <p className="text-gray-600">
-                    Announce your application and earn referral rewards.<br/>Submit your tweet link for proof.
+                    Announce your application and earn referral rewards.<br />Submit your tweet link for proof.
                 </p>
             </div>
 
@@ -308,17 +314,16 @@ export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
                         {urlError ? (
                             <XCircleIcon className="h-5 w-5 text-red-400" />
                         ) : tweetUrl.trim() && !urlError ? (
-                            <CheckBadgeIcon className="h-5 w-5 text-green-400" />
+                            <CheckCircleIcon className="h-5 w-5 text-green-400" />
                         ) : (
-                            <CheckBadgeIcon className="h-5 w-5 text-gray-400" />
+                            <CheckIcon className="h-5 w-5 text-gray-400" />
                         )}
                     </div>
                     <input
                         type="url"
                         id="tweet-url"
-                        className={`py-4 block w-full pl-10 sm:text-sm rounded-md text-gray-900 bg-white border-0 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500 ${
-                            urlError ? 'outline-red-500 outline-2' : ''
-                        }`}
+                        className={`py-4 block w-full pl-10 sm:text-sm rounded-md text-gray-900 bg-white border-0 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500 ${urlError ? 'outline-red-500 outline-2' : ''
+                            }`}
                         placeholder="https://x.com/username/status/1234386091818959039"
                         value={tweetUrl}
                         onChange={handleUrlChange}
