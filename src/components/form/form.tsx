@@ -6,7 +6,7 @@ import { Progress } from "@/components/form/progress";
 import { InputField } from "@/components/form/input-field";
 import { ConfirmationDisplay } from "@/components/form/confirmation-display";
 import { FormNavigation } from "@/components/form/form-navigation";
-import { TwitterShareView } from "@/components/twitter-share-view";
+import { TwitterShareView } from "@/components/form/twitter-share-view";
 import { Confetti } from "@/components/confetti";
 import { useToast } from "@/components/toast-provider";
 import {
