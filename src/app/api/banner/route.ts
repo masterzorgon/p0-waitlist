@@ -4,12 +4,10 @@ import { v4 as uuidv4 } from "uuid";
 
 export async function POST(req: NextRequest) {
     try {
-        const { username, email, mutual } = await req.json();
+        const { username, mutual } = await req.json();
 
-        // Fetch Twitter profile pic
         const profilePic = `https://unavatar.io/twitter/${username}`;
 
-        // Check if the profile image exists
         const profileResponse = await fetch(profilePic);
         if (!profileResponse.ok) {
             return NextResponse.json({
@@ -20,28 +18,28 @@ export async function POST(req: NextRequest) {
 
         const imgBuffer = await profileResponse.arrayBuffer();
 
-        // Overlay onto template
+
         const template = sharp("./public/images/backgrounds/template.png");
-        // First, resize the Twitter PFP
+
         const resizedPfp = await sharp(Buffer.from(imgBuffer))
             .resize(300, 300)
             .png()
             .toBuffer();
 
-        // Create a rounded corner mask (300x300, radius 200)
+        // make a rounded corner mask (300x300, radius 200)
         const roundedMask = Buffer.from(
             `<svg width="300" height="300">
                 <rect x="0" y="0" width="300" height="300" rx="200" ry="200" />
             </svg>`
         );
 
-        // Apply the mask to the PFP
+        // apply the mask to the PFP
         const roundedPfp = await sharp(resizedPfp)
             .composite([{ input: roundedMask, blend: "dest-in" }])
             .png()
             .toBuffer();
 
-        // Composite onto the template
+        // format over the template
         const composite = await template
             .composite([
                 { input: roundedPfp, top: 345, left: 354 } // shifted up 10, right 10
@@ -49,10 +47,10 @@ export async function POST(req: NextRequest) {
             .png()
             .toBuffer();
 
-        // Generate unique ID for this image
+        // create unique ID for this image
         const imageId = uuidv4();
 
-        // Encode as base64 string for immediate display
+        // encode as base64 string for immediate display
         const base64Img = composite.toString("base64");
 
         // Return success response with both the generated image and shareable URL

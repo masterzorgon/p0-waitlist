@@ -39,7 +39,7 @@ export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
     const [isSubmittingProof, setIsSubmittingProof] = useState(false);
     const [urlError, setUrlError] = useState<string>('');
 
-    // Generate a simple referral code based on wallet address
+    // TODO: Generate a simple referral code based on wallet address
     const referralCode = `0dotxyz.com/waitlist?ref=${formData.wallet.slice(-8)}`;
 
     const generateBanner = async () => {
@@ -148,7 +148,6 @@ export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
         if (!bannerImage) return;
 
         try {
-            // Create a temporary anchor element to trigger download
             const link = document.createElement('a');
             link.href = bannerImage;
             link.download = `project-0-banner-${formData.twitter.replace('@', '')}.png`;
@@ -186,9 +185,7 @@ export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
                 </p>
             </div>
 
-            {/* Twitter UI Mockup */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-4 mb-6">
-                {/* Twitter Header */}
                 <div className="flex items-center mb-4">
                     <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
                         <img
