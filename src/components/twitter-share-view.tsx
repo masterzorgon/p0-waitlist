@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/button";
 import { useToast } from "@/components/toast-provider";
 import { getTwitterProfileImage } from "@/lib/utils";
-import { ChatBubbleBottomCenterIcon, ArrowDownTrayIcon, CheckBadgeIcon } from "@heroicons/react/24/outline";
+import { ArrowDownTrayIcon, CheckBadgeIcon, XCircleIcon } from "@heroicons/react/24/outline";
 
 interface TwitterShareViewProps {
     formData: {
@@ -42,6 +42,7 @@ export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
     const [isSharing, setIsSharing] = useState(false);
     const [tweetUrl, setTweetUrl] = useState('');
     const [isSubmittingProof, setIsSubmittingProof] = useState(false);
+    const [urlError, setUrlError] = useState<string>('');
     const { showToast } = useToast();
 
     // Generate a simple referral code based on wallet address
@@ -90,19 +91,64 @@ export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
         }, 1000);
     };
 
-    const validateTweetUrl = (url: string): boolean => {
+    const validateTweetUrl = (url: string): { isValid: boolean; error?: string } => {
+        if (!url.trim()) {
+            return { isValid: false, error: 'Please enter a tweet URL' };
+        }
+
+        try {
+            // Basic URL validation
+            new URL(url);
+        } catch {
+            return { isValid: false, error: 'Please enter a valid URL' };
+        }
+
+        // Twitter/X URL pattern validation
         const twitterUrlPattern = /^https?:\/\/(www\.)?(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/status\/\d+$/;
-        return twitterUrlPattern.test(url);
+        if (!twitterUrlPattern.test(url)) {
+            return { 
+                isValid: false, 
+                error: 'Please enter a valid Twitter/X tweet URL (e.g., https://x.com/username/status/1234567890)' 
+            };
+        }
+
+        return { isValid: true };
+    };
+
+    const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setTweetUrl(value);
+        
+        // Clear error when user starts typing
+        if (urlError) {
+            setUrlError('');
+        }
+        
+        // Validate on blur or when user stops typing
+        if (value.trim()) {
+            const validation = validateTweetUrl(value);
+            if (!validation.isValid) {
+                setUrlError(validation.error || '');
+            }
+        }
+    };
+
+    const handleUrlBlur = () => {
+        if (tweetUrl.trim()) {
+            const validation = validateTweetUrl(tweetUrl);
+            if (!validation.isValid) {
+                setUrlError(validation.error || '');
+            } else {
+                setUrlError('');
+            }
+        }
     };
 
     const handleSubmitProof = async () => {
-        if (!tweetUrl.trim()) {
-            showToast('Please enter your tweet URL', 'error');
-            return;
-        }
-
-        if (!validateTweetUrl(tweetUrl)) {
-            showToast('Please enter a valid Twitter/X tweet URL', 'error');
+        const validation = validateTweetUrl(tweetUrl);
+        if (!validation.isValid) {
+            setUrlError(validation.error || '');
+            showToast(validation.error || 'Please enter a valid tweet URL', 'error');
             return;
         }
 
@@ -256,25 +302,39 @@ export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
                 </div>
             </div>
 
-            <div className="mt-4 relative rounded-md shadow-sm outline outline-1 outline-gray-200 bg-white">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                    <CheckBadgeIcon className="h-5 w-5 text-gray-400" />
+            <div className="mt-4">
+                <div className="relative rounded-md shadow-sm outline outline-1 outline-gray-200 bg-white">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                        {urlError ? (
+                            <XCircleIcon className="h-5 w-5 text-red-400" />
+                        ) : tweetUrl.trim() && !urlError ? (
+                            <CheckBadgeIcon className="h-5 w-5 text-green-400" />
+                        ) : (
+                            <CheckBadgeIcon className="h-5 w-5 text-gray-400" />
+                        )}
+                    </div>
+                    <input
+                        type="url"
+                        id="tweet-url"
+                        className={`py-4 block w-full pl-10 sm:text-sm rounded-md text-gray-900 bg-white border-0 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500 ${
+                            urlError ? 'outline-red-500 outline-2' : ''
+                        }`}
+                        placeholder="https://x.com/username/status/1234386091818959039"
+                        value={tweetUrl}
+                        onChange={handleUrlChange}
+                        onBlur={handleUrlBlur}
+                    />
                 </div>
-                <input
-                    type="url"
-                    id="tweet-url"
-                    className="py-4 block w-full pl-10 sm:text-sm rounded-md text-gray-900 bg-white border-0 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500"
-                    placeholder="https://x.com/username/status/1234386091818959039"
-                    value={tweetUrl}
-                    onChange={(e) => setTweetUrl(e.target.value)}
-                />
+                {urlError && (
+                    <p className="mt-2 text-sm text-red-600">{urlError}</p>
+                )}
             </div>
 
             <Button
                 className="w-full py-3 mt-4"
                 onClick={handleSubmitProof}
                 loading={isSubmittingProof}
-                disabled={!tweetUrl.trim() || isSubmittingProof}
+                disabled={!tweetUrl.trim() || isSubmittingProof || !!urlError}
             >
                 Submit Tweet Proof
             </Button>
