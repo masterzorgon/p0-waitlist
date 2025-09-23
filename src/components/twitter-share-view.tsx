@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/button";
 import { useToast } from "@/components/toast-provider";
 import { getTwitterProfileImage } from "@/lib/utils";
-import { ChatBubbleBottomCenterIcon, ArrowDownTrayIcon } from "@heroicons/react/24/outline";
+import { ChatBubbleBottomCenterIcon, ArrowDownTrayIcon, CheckBadgeIcon } from "@heroicons/react/24/outline";
 
 interface TwitterShareViewProps {
     formData: {
@@ -258,13 +258,13 @@ export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
 
             <div className="mt-4 relative rounded-md shadow-sm outline outline-1 outline-gray-200 bg-white">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                    <ChatBubbleBottomCenterIcon className="h-5 w-5 text-gray-400" />
+                    <CheckBadgeIcon className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
                     type="url"
                     id="tweet-url"
                     className="py-4 block w-full pl-10 sm:text-sm rounded-md text-gray-900 bg-white border-0 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500"
-                    placeholder="https://twitter.com/username/status/1234567890"
+                    placeholder="https://x.com/username/status/1234386091818959039"
                     value={tweetUrl}
                     onChange={(e) => setTweetUrl(e.target.value)}
                 />
