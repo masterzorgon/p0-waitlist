@@ -108,6 +108,12 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
     const [isFormCompleted, setIsFormCompleted] = useState(false);
     const [showConfetti, setShowConfetti] = useState(false);
     
+    // Add wallet points state
+    const [walletPoints, setWalletPoints] = useState<{
+        points?: number;
+        rank?: number;
+    } | null>(null);
+    
     // Add banner-related state
     const [generatedBanner, setGeneratedBanner] = useState<{
         image: string;
@@ -264,6 +270,47 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
         }
     };
 
+    // Add function to fetch wallet points
+    const fetchWalletPoints = async (wallet: string): Promise<boolean> => {
+        try {
+            const response = await fetch('/api/wallet-points', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ wallet }),
+            });
+
+            const result = await response.json();
+
+            if (result.success && result.data) {
+                setWalletPoints({
+                    points: result.data.points,
+                    rank: result.data.rank
+                });
+                return true;
+            } else {
+                // Wallet not found or no points - this is not necessarily an error
+                setWalletPoints(null);
+                return true;
+            }
+        } catch (error) {
+            console.error('Error fetching wallet points:', error);
+            setWalletPoints(null);
+            return true; // Don't block form progression on points fetch failure
+        }
+    };
+
+    // Add function to store data in localStorage
+    const storeFormData = () => {
+        const dataToStore = {
+            ...formData,
+            ...walletPoints,
+            timestamp: new Date().toISOString()
+        };
+        localStorage.setItem('p0-waitlist-data', JSON.stringify(dataToStore));
+    };
+
     const handleNext = async () => {
         const isValid = await validateCurrentField();
         if (!isValid) return;
@@ -285,6 +332,13 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
             if (!success) {
                 return; // Don't proceed if newsletter signup failed
             }
+        }
+
+        // If we're on the wallet step (step 4), fetch wallet points
+        if (currentStep === 4) {
+            setIsSubmitting(true);
+            await fetchWalletPoints(formData.wallet);
+            setIsSubmitting(false);
         }
 
         // If we're on the Twitter step (step 3), generate banner before proceeding
@@ -310,8 +364,11 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
     };
 
     const handleComplete = () => {
+        // Store form data in localStorage before completing
+        storeFormData();
+        
         // Handle form completion logic here
-        console.log('Form completed!', formData);
+        console.log('Form completed!', formData, walletPoints);
         setShowConfetti(true);
         // Delay setting form completed to allow confetti to show
         setTimeout(() => {
@@ -333,6 +390,7 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
                     <TwitterShareView 
                         formData={formData} 
                         generatedBanner={generatedBanner}
+                        walletPoints={walletPoints}
                     />
                 </section>
             </>

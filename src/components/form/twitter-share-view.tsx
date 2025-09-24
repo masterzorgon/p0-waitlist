@@ -24,6 +24,10 @@ interface TwitterShareViewProps {
         profileImage: string;
         username: string;
     } | null;
+    walletPoints?: {
+        points?: number;
+        rank?: number;
+    } | null;
 }
 
 interface BannerResponse {
@@ -35,7 +39,7 @@ interface BannerResponse {
     username: string;
 }
 
-export const TwitterShareView = ({ formData, generatedBanner }: TwitterShareViewProps) => {
+export const TwitterShareView = ({ formData, generatedBanner, walletPoints }: TwitterShareViewProps) => {
     const { showToast } = useToast();
     const router = useRouter();
 
@@ -128,20 +132,51 @@ export const TwitterShareView = ({ formData, generatedBanner }: TwitterShareView
         }
 
         try {
-            // setIsSubmittingProof(true);
+            setIsSubmittingProof(true);
 
-            // Here you would typically submit the tweet URL to your backend
-            // For now, we'll just show a success message
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+            // Update localStorage with tweet URL
+            const existingData = localStorage.getItem('p0-waitlist-data');
+            let dataToStore;
+            
+            if (existingData) {
+                try {
+                    dataToStore = JSON.parse(existingData);
+                    dataToStore.tweetUrl = tweetUrl;
+                } catch (error) {
+                    console.error('Error parsing existing data:', error);
+                    dataToStore = {
+                        ...formData,
+                        ...walletPoints,
+                        tweetUrl: tweetUrl,
+                        timestamp: new Date().toISOString()
+                    };
+                }
+            } else {
+                dataToStore = {
+                    ...formData,
+                    ...walletPoints,
+                    tweetUrl: tweetUrl,
+                    timestamp: new Date().toISOString()
+                };
+            }
+            
+            localStorage.setItem('p0-waitlist-data', JSON.stringify(dataToStore));
+
+            // Prepare URL parameters for confirmation page
+            const params = new URLSearchParams({
+                email: formData.email,
+                telegram: formData.telegram,
+                twitter: formData.twitter,
+                wallet: formData.wallet,
+                ...(walletPoints?.points && { points: walletPoints.points.toString() }),
+                ...(walletPoints?.rank && { rank: walletPoints.rank.toString() }),
+                tweetUrl: tweetUrl
+            });
 
             showToast('Tweet proof submitted successfully!', 'success');
 
-            router.push('/confirmation');
-
-            // You can add additional logic here, such as:
-            // - Submit to your backend API
-            // - Redirect to a success page
-            // - Update the UI state
+            // Navigate to confirmation page with all data
+            router.push(`/confirmation?${params.toString()}`);
 
         } catch (error) {
             console.error('Error submitting proof:', error);
