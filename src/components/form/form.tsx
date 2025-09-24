@@ -101,15 +101,22 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
-    // Add state to track successfully submitted emails
     const [successfullySubmittedEmail, setSuccessfullySubmittedEmail] = useState<string | null>(null);
     const { showToast } = useToast();
     const [twitterProfileImage, setTwitterProfileImage] = useState<string>('');
     const [isValidatingTwitter, setIsValidatingTwitter] = useState(false);
-    // Add state to track if form is completed
     const [isFormCompleted, setIsFormCompleted] = useState(false);
-    // Add state to trigger confetti
     const [showConfetti, setShowConfetti] = useState(false);
+    
+    // Add banner-related state
+    const [generatedBanner, setGeneratedBanner] = useState<{
+        image: string;
+        imageId: string;
+        shareableUrl: string;
+        profileImage: string;
+        username: string;
+    } | null>(null);
+    const [isGeneratingBanner, setIsGeneratingBanner] = useState(false);
 
     const currentConfig = stepConfigs[currentStep - 1];
 
@@ -218,6 +225,45 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
         }
     };
 
+    // Add banner generation function
+    const generateBanner = async (twitterHandle: string): Promise<boolean> => {
+        try {
+            setIsGeneratingBanner(true);
+            const response = await fetch('/api/banner', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: twitterHandle.replace('@', ''),
+                    mutual: false
+                }),
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                setGeneratedBanner({
+                    image: result.image,
+                    imageId: result.imageId,
+                    shareableUrl: result.shareableUrl,
+                    profileImage: result.profileImage,
+                    username: result.username
+                });
+                return true;
+            } else {
+                showToast('Failed to generate banner image', 'error');
+                return false;
+            }
+        } catch (error) {
+            console.error('Error generating banner:', error);
+            showToast('Error generating banner image', 'error');
+            return false;
+        } finally {
+            setIsGeneratingBanner(false);
+        }
+    };
+
     const handleNext = async () => {
         const isValid = await validateCurrentField();
         if (!isValid) return;
@@ -238,6 +284,17 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
             
             if (!success) {
                 return; // Don't proceed if newsletter signup failed
+            }
+        }
+
+        // If we're on the Twitter step (step 3), generate banner before proceeding
+        if (currentStep === 3) {
+            setIsSubmitting(true);
+            const bannerSuccess = await generateBanner(formData.twitter);
+            setIsSubmitting(false);
+            
+            if (!bannerSuccess) {
+                return; // Don't proceed if banner generation failed
             }
         }
 
@@ -267,13 +324,16 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
         formData[currentConfig.inputName as keyof typeof formData]
     );
 
-    // If form is completed, show the TwitterShareView
+    // If form is completed, show the TwitterShareView with generated banner
     if (isFormCompleted) {
         return (
             <>
                 <Confetti trigger={showConfetti} onComplete={() => setShowConfetti(false)} />
                 <section className="mx-auto w-[90%] sm:w-[80%] md:w-[70%] lg:w-[60%] xl:w-[50%] mb-22">
-                    <TwitterShareView formData={formData} />
+                    <TwitterShareView 
+                        formData={formData} 
+                        generatedBanner={generatedBanner}
+                    />
                 </section>
             </>
         );

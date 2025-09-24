@@ -17,6 +17,13 @@ interface TwitterShareViewProps {
         twitter: string;
         wallet: string;
     };
+    generatedBanner?: {
+        image: string;
+        imageId: string;
+        shareableUrl: string;
+        profileImage: string;
+        username: string;
+    } | null;
 }
 
 interface BannerResponse {
@@ -28,12 +35,12 @@ interface BannerResponse {
     username: string;
 }
 
-export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
+export const TwitterShareView = ({ formData, generatedBanner }: TwitterShareViewProps) => {
     const { showToast } = useToast();
     const router = useRouter();
 
     const [bannerImage, setBannerImage] = useState<string>('');
-    const [isGeneratingBanner, setIsGeneratingBanner] = useState(true);
+    const [isGeneratingBanner, setIsGeneratingBanner] = useState(!generatedBanner);
     const [isSharing, setIsSharing] = useState(false);
     const [tweetUrl, setTweetUrl] = useState('');
     const [isSubmittingProof, setIsSubmittingProof] = useState(false);
@@ -163,8 +170,15 @@ export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
     };
 
     useEffect(() => {
-        generateBanner();
-    }, []);
+        // If we have a pre-generated banner, use it
+        if (generatedBanner) {
+            setBannerImage(`data:image/png;base64,${generatedBanner.image}`);
+            setIsGeneratingBanner(false);
+        } else {
+            // Otherwise generate one
+            generateBanner();
+        }
+    }, [generatedBanner]);
 
     const profileImage = getTwitterProfileImage(formData.twitter);
 
