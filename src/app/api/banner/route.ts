@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 
 export async function POST(req: NextRequest) {
     try {
-        const { username, mutual } = await req.json();
+        const { username } = await req.json();
 
         const profilePic = `https://unavatar.io/twitter/${username}`;
 
@@ -18,8 +18,7 @@ export async function POST(req: NextRequest) {
 
         const imgBuffer = await profileResponse.arrayBuffer();
 
-
-        const template = sharp("../../../public/images/backgrounds/template.png");
+        const template = sharp("./public/images/backgrounds/banner-template.png");
 
         const resizedPfp = await sharp(Buffer.from(imgBuffer))
             .resize(300, 300)
@@ -61,7 +60,6 @@ export async function POST(req: NextRequest) {
             shareableUrl: `${req.nextUrl.origin}/api/image/${imageId}`,
             profileImage: profilePic,
             username: username,
-            mutual: mutual
         });
     } catch (err) {
         console.error("Error generating image:", err);

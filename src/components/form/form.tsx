@@ -242,7 +242,6 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
                 },
                 body: JSON.stringify({
                     username: twitterHandle.replace('@', ''),
-                    mutual: false
                 }),
             });
 
