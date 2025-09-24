@@ -12,10 +12,10 @@
   --font-mono: var(--font-geist-mono);
 
   /* Add your custom colors */
-  --color-vangardPurple: #AA87FA;
-  --color-deepBlue: #1E468C;
+  --color-vangardPurple: #8C6D1E;
+  --color-deepBlue: #797044;
   --color-lightBlue: #BED7F5;
-  --color-darkMatter: #0a0a0a;
+  --color-darkMatter: #3F3F3E;
 }
 
 body {

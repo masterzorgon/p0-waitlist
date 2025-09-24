@@ -56,7 +56,7 @@ export const stepConfigs = [
         id: 4,
         name: "Wallet",
         title: "Enter your wallet address",
-        description: "Enter the wallet you use on Project 0. We'll determine your points and rank.",
+        description: "Enter the wallet you use on Social Capital. We'll determine your points and rank.",
         icon: WalletIcon,
         inputType: "text",
         inputName: "wallet",
@@ -235,31 +235,31 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
     const generateBanner = async (twitterHandle: string): Promise<boolean> => {
         try {
             setIsGeneratingBanner(true);
-            const response = await fetch('/api/banner', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username: twitterHandle.replace('@', ''),
-                }),
-            });
+            // const response = await fetch('/api/banner', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //     },
+            //     body: JSON.stringify({
+            //         username: twitterHandle.replace('@', ''),
+            //     }),
+            // });
 
-            const result = await response.json();
+            // const result = await response.json();
 
-            if (result.success) {
-                setGeneratedBanner({
-                    image: result.image,
-                    imageId: result.imageId,
-                    shareableUrl: result.shareableUrl,
-                    profileImage: result.profileImage,
-                    username: result.username
-                });
+            // if (result.success) {
+            //     setGeneratedBanner({
+            //         image: result.image,
+            //         imageId: result.imageId,
+            //         shareableUrl: result.shareableUrl,
+            //         profileImage: result.profileImage,
+            //         username: result.username
+            //     });
                 return true;
-            } else {
-                showToast('Failed to generate banner image', 'error');
-                return false;
-            }
+            // } else {
+            //     showToast('Failed to generate banner image', 'error');
+            //     return false;
+            // }
         } catch (error) {
             console.error('Error generating banner:', error);
             showToast('Error generating banner image', 'error');
@@ -447,7 +447,7 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
 
                 <div className="mt-6 text-sm text-center text-gray-400 max-w-sm sm:max-w-lg mx-auto">
                     <p>
-                        Early access will be granted at Project 0&apos;s discretion.
+                        Early access will be granted at Social Capital&apos;s discretion.
                         You will be notified via email if your early access application is approved.
                         We will never ask for your secret key or seed phrase.
                     </p>

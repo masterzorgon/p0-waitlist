@@ -7,7 +7,7 @@ const DISCLAIMERS = [
     },
     {
         id: 'discretion',
-        text: 'Early access users will be selected at Project 0\'s discretion'
+        text: 'Early access users will be selected at Social Capital\'s discretion'
     },
     {
         id: 'email-notification',

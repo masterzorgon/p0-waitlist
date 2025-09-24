@@ -7,13 +7,13 @@ export function Header() {
     return (
         <div className="relative">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            {/* <img
                 src="/images/backgrounds/main.svg"
                 alt="Nodes"
                 width={768}
                 className="absolute top-0 left-0 lg:hidden"
             />
-            <Nodes />
+            <Nodes /> */}
             <div className="mx-auto w-full max-w-[var(--p0-container-width)] px-4 md:px-6">
                 <header className="mx-auto flex w-full items-center justify-center pt-9 md:pt-18">
                     <div className="relative">
@@ -52,12 +52,12 @@ export function Header() {
                                 </div>
                                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                                     <p className="text-xs/4 sm:text-sm/6 text-gray-900 flex items-center">
-                                        <img
+                                        {/* <img
                                             src="/images/logos/kamino.png"
                                             alt="Kamino"
                                             className="h-4 w-4 mr-2 inline-block"
-                                        />
-                                        <strong className="font-semibold">Kamino Main Market Early Access Application</strong>
+                                        /> */}
+                                        <strong className="font-semibold">Closed Beta Coming In Q4 2025</strong>
                                     </p>
                                 </div>
                             </div>

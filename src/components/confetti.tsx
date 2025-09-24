@@ -19,9 +19,10 @@ interface ConfettiProps {
 }
 
 const colors = [
-    "#AA87FA", // vangardPurple
-    "#1E468C", // deepBlue
-    "#BED7F5", // lightBlue
+    "#FF6B6B", // Red
+    "#45B7D1", // Blue
+    "#96CEB4", // Green
+    "#FFEAA7", // Yellow
 ];
 
 export const Confetti = ({ trigger, onComplete }: ConfettiProps) => {

@@ -50,40 +50,40 @@ export const TwitterShareView = ({ formData, generatedBanner, walletPoints }: Tw
     const [urlError, setUrlError] = useState<string>('');
 
     // TODO: Generate a simple referral code based on wallet address
-    const referralCode = `0dotxyz.com/waitlist?ref=${formData.wallet.slice(-8)}`;
+    const referralCode = `socapital.trading/waitlist?ref=${formData.wallet.slice(-8)}`;
 
     const generateBanner = async () => {
-        try {
-            setIsGeneratingBanner(true);
-            const response = await fetch('/api/banner', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username: formData.twitter.replace('@', ''),
-                    email: formData.email,
-                    mutual: false
-                }),
-            });
+        // try {
+        //     setIsGeneratingBanner(true);
+        //     const response = await fetch('/api/banner', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body: JSON.stringify({
+        //             username: formData.twitter.replace('@', ''),
+        //             email: formData.email,
+        //             mutual: false
+        //         }),
+        //     });
 
-            const result: BannerResponse = await response.json();
+        //     const result: BannerResponse = await response.json();
 
-            if (result.success) {
-                setBannerImage(`data:image/png;base64,${result.image}`);
-            } else {
-                showToast('Failed to generate banner image', 'error');
-            }
-        } catch (error) {
-            console.error('Error generating banner:', error);
-            showToast('Error generating banner image', 'error');
-        } finally {
-            setIsGeneratingBanner(false);
-        }
+        //     if (result.success) {
+        //         setBannerImage(`data:image/png;base64,${result.image}`);
+        //     } else {
+        //         showToast('Failed to generate banner image', 'error');
+        //     }
+        // } catch (error) {
+        //     console.error('Error generating banner:', error);
+        //     showToast('Error generating banner image', 'error');
+        // } finally {
+        //     setIsGeneratingBanner(false);
+        // }
     };
 
     const handleShareOnTwitter = () => {
-        const tweetText = `Just applied for the new @0dotxyz rollout. Join me: ${referralCode}`;
+        const tweetText = `Just applied for the new @so_capital rollout. Join me: ${referralCode}`;
         const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
 
         setIsSharing(true);
@@ -261,7 +261,7 @@ export const TwitterShareView = ({ formData, generatedBanner, walletPoints }: Tw
 
                 <div className="mb-4">
                     <p className="text-gray-900 leading-relaxed">
-                        Just applied for the new <span className="text-blue-500">@0dotxyz</span> rollout. Join me: <span className="text-blue-500">{referralCode}</span>
+                        Just applied for the new <span className="text-blue-500">@so_capital</span> rollout. Join me: <span className="text-blue-500">{referralCode}</span>
                     </p>
                 </div>
 
@@ -277,7 +277,7 @@ export const TwitterShareView = ({ formData, generatedBanner, walletPoints }: Tw
                         <>
                             <img
                                 src={bannerImage}
-                                alt="Project 0 Banner"
+                                alt="Social Capital Banner"
                                 className="w-full h-auto"
                             />
                             <button
