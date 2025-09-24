@@ -14,7 +14,7 @@ import {
     LinkIcon
 } from '@heroicons/react/24/outline'
 import { useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 
 interface UserData {
     email: string
@@ -26,26 +26,7 @@ interface UserData {
     tweetUrl?: string
 }
 
-const DISCLAIMERS = [
-    {
-        id: 'no-guarantee',
-        text: 'Application does not guarantee early access'
-    },
-    {
-        id: 'discretion',
-        text: 'Early access users will be selected at Project 0\'s discretion'
-    },
-    {
-        id: 'email-notification',
-        text: 'Users granted early access will be notified via email'
-    },
-    {
-        id: 'security',
-        text: 'We will never ask for your secret key or seed phrase'
-    }
-]
-
-export default function ThankYouPage() {
+function ThankYouContent() {
     const searchParams = useSearchParams()
     const [userData, setUserData] = useState<UserData | null>(null)
     const [loading, setLoading] = useState(true)
@@ -182,7 +163,7 @@ export default function ThankYouPage() {
                                     Application Confirmed
                                 </h3>
                                 <p className="text-sm text-gray-600 max-w-md mx-auto">
-                                    Thank you for applying to Project 0! Your information has been successfully submitted.
+                                    Thank you for applying! Your information has been successfully submitted.
                                 </p>
                             </div>
                             
@@ -192,7 +173,7 @@ export default function ThankYouPage() {
                                 ))}
                             </div>
 
-                            <Disclaimers disclaimers={DISCLAIMERS} className="mt-6" />
+                            <Disclaimers className="mt-6" />
 
                             <div className="mt-8 pt-6 border-t border-gray-200">
                                 <div className="text-center">
@@ -207,5 +188,22 @@ export default function ThankYouPage() {
                 </div>
             </div>
         </main>
+    )
+}
+
+export default function ThankYouPage() {
+    return (
+        <Suspense
+            fallback={
+                <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+                    <Header />
+                    <div className="flex items-center justify-center min-h-[calc(100vh-280px)]">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                    </div>
+                </main>
+            }
+        >
+            <ThankYouContent />
+        </Suspense>
     )
 }

@@ -5,9 +5,8 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/button";
 import { useToast } from "@/components/toast-provider";
 import { getTwitterProfileImage, validateTweetUrl } from "@/lib/utils";
-import { ArrowDownTrayIcon, CheckIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { CheckCircleIcon, ArrowDownTrayIcon, CheckIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
-import { CheckCircleIcon } from "@heroicons/react/16/solid";
 import { TwitterIconNoBackground } from "@/components/icons";
 
 interface TwitterShareViewProps {
@@ -137,7 +136,7 @@ export const TwitterShareView = ({ formData, generatedBanner, walletPoints }: Tw
             // Update localStorage with tweet URL
             const existingData = localStorage.getItem('p0-waitlist-data');
             let dataToStore;
-            
+
             if (existingData) {
                 try {
                     dataToStore = JSON.parse(existingData);
@@ -159,7 +158,7 @@ export const TwitterShareView = ({ formData, generatedBanner, walletPoints }: Tw
                     timestamp: new Date().toISOString()
                 };
             }
-            
+
             localStorage.setItem('p0-waitlist-data', JSON.stringify(dataToStore));
 
             // Prepare URL parameters for confirmation page
@@ -322,9 +321,13 @@ export const TwitterShareView = ({ formData, generatedBanner, walletPoints }: Tw
                 <div className="relative rounded-md shadow-sm outline outline-1 outline-gray-200 bg-white">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
                         {urlError ? (
-                            <XCircleIcon className="h-5 w-5 text-red-400" />
+                            <div className="p-1 bg-red-100 rounded-full">
+                                <XCircleIcon className="h-5 w-5 text-red-600" />
+                            </div>
                         ) : tweetUrl.trim() && !urlError ? (
-                            <CheckCircleIcon className="h-5 w-5 text-green-400" />
+                            <div className="p-1 bg-green-100 rounded-full">
+                                <CheckCircleIcon className="h-5 w-5 text-green-600" />
+                            </div>
                         ) : (
                             <CheckIcon className="h-5 w-5 text-gray-400" />
                         )}
@@ -332,7 +335,7 @@ export const TwitterShareView = ({ formData, generatedBanner, walletPoints }: Tw
                     <input
                         type="url"
                         id="tweet-url"
-                        className={`py-4 block w-full pl-10 sm:text-sm rounded-md text-gray-900 bg-white border-0 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500 ${urlError ? 'outline-red-500 outline-2' : ''
+                        className={`ml-2 py-4 block w-full pl-10 sm:text-sm rounded-md text-gray-900 bg-white border-0 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500 ${urlError ? 'outline-red-500 outline-2' : ''
                             }`}
                         placeholder="https://x.com/username/status/1234386091818959039"
                         value={tweetUrl}
