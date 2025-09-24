@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
         const imgBuffer = await profileResponse.arrayBuffer();
 
 
-        const template = sharp("./public/images/backgrounds/template.png");
+        const template = sharp("../../../public/images/backgrounds/template.png");
 
         const resizedPfp = await sharp(Buffer.from(imgBuffer))
             .resize(300, 300)
