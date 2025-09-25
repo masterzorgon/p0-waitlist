@@ -15,6 +15,8 @@ import {
 } from '@heroicons/react/24/outline'
 import { useSearchParams } from 'next/navigation'
 import { Suspense, useEffect, useState } from 'react'
+import Link from 'next/link'
+import { ArrowUturnLeftIcon } from '@heroicons/react/16/solid'
 
 interface UserData {
     email: string
@@ -180,6 +182,10 @@ function ThankYouContent() {
                                     <div className="inline-flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-lg text-sm font-medium">
                                         <CheckCircleIcon className="h-4 w-4 mr-2" />
                                         Application Complete
+                                    </div>
+                                    <div className="mt-4 flex items-center justify-center text-sm text-gray-600">
+                                        <ArrowUturnLeftIcon className="h-4 w-4 mr-2" />
+                                        <Link href="/">Back to form</Link>
                                     </div>
                                 </div>
                             </div>
